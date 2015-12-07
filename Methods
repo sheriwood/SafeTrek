@@ -1,2 +1,29 @@
 
-I will detail the search engine and heuristics, give the process used to obtain the maps and annotate them with the sidewalk data.
+This doc will detail the search engine and heuristics, give the process used to obtain the maps and annotate them with the sidewalk data.
+
+Map Data:
+   I acquired map data by exporting an XML file for Logan, Utah from OpenStreetMaps. This data 
+   an be exported for any region simply by entering the boundary coordinates at (TODO: enter 
+   website here). Prior to doing this, I added sidewalk data by editing the public OpenStreetMaps map.
+   
+   The XML file is parsed into a graph, using the following steps:
+   1. Elimiate all edges that are not roads (rivers, hiking trails, walkways, etc.).
+   2. Assign a danger score to each edge based on the existance of a sidewalk (or lack thereof).
+   3. Eliminate all nodes that are not intersections (buildings, other landmarks).
+   4. Split up any edges that have more than two nodes, removing any nodes that do not branch from current edge.
+   
+Search Engine:
+The search engine is a modification of the A Star search algorithm: 
+   The heuristic is an error formula that tells the algorithm when to start heading back home.
+   TODO: add error code
+   With this error formula, the algorithm will choose nodes that move away from the start node 
+   until the halfway point is reached. After that point, it will choose nodes that move closer 
+   o the beginning, thus creating a loop that results in the desired distance.
+   
+   Differences:
+   The input is a start point and distance rather than a start point and end point.
+   The search is finished when the distance is reached or when there is no more search space.
+   
+   
+   
+   
