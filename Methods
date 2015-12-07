@@ -1,28 +1,39 @@
 
-This doc will detail the search engine and heuristics, give the process used to obtain the maps and annotate them with the sidewalk data.
-
 Map Data:
    I acquired map data by exporting an XML file for Logan, Utah from OpenStreetMaps. This data 
-   an be exported for any region simply by entering the boundary coordinates at (TODO: enter 
-   website here). Prior to doing this, I added sidewalk data by editing the public OpenStreetMaps map.
+   an be exported for any region simply by entering the boundary coordinates at 
+   http://www.openstreetmap.org/export#map=17/41.72342/-111.85199. 
+   Prior to doing this, I added sidewalk data by editing the OpenStreetMaps public map.
    
    The XML file is parsed into a graph, using the following steps:
-   1. Elimiate all edges that are not roads (rivers, hiking trails, walkways, etc.).
-   2. Assign a danger score to each edge based on the existance of a sidewalk (or lack thereof).
+   1. Eliminate all edges that are not roads (rivers, hiking trails, etc.).
+   2. Assign a danger score to each edge based on the existance or lack of a sidewalk.
    3. Eliminate all nodes that are not intersections (buildings, other landmarks).
    4. Split up any edges that have more than two nodes, removing any nodes that do not branch from current edge.
    
 Search Engine:
-The search engine is a modification of the A Star search algorithm: 
-   The heuristic is an error formula that tells the algorithm when to start heading back home.
-   TODO: add error code
-   With this error formula, the algorithm will choose nodes that move away from the start node 
-   until the halfway point is reached. After that point, it will choose nodes that move closer 
-   o the beginning, thus creating a loop that results in the desired distance.
+   The search engine applied to the graph is a modification of the A Star search algorithm. It searches
+   for the route with the most sidewalks along the distance supplied by the user, and returns near the 
+   start node. It returns the optimal path in the form of a vector of coordinates.
    
-   Differences:
-   The input is a start point and distance rather than a start point and end point.
-   The search is finished when the distance is reached or when there is no more search space.
+      Heuristic:
+      The heuristic is an error formula that tells the algorithm when to start heading back home:
+         error = |targetDistance -(distance + distanceBack)|
+      With this error formula, the algorithm will choose nodes that move away from the start node 
+      until the halfway point is reached. After that point, it will choose nodes that move closer 
+      to the beginning, thus creating a loop that results in the desired distance.
+   
+      Modifications from A Star:
+      The input is a start point and distance rather than a start point and end point.
+      The cost of an edge  is the existance or lack of a sidewalk, rather than a distance.
+      The search is finished when the distance is reached or when all edges have been explored.
+   
+   
+Data Rendering:
+   I use Unfolding Maps to render the path returned by the search engine. It iterates through the
+   vector of coordinates and draws a straight line from each location to the next on an OpenStreetMaps
+   map. The coodinates of the start node are used as the center of the map view. The user can manually 
+   zoom and move through the map.
    
    
    
