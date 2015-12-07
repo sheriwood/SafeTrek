@@ -1,8 +1,8 @@
 
 Map Data:
    I acquired map data by exporting an XML file for Logan, Utah from OpenStreetMaps. This data 
-   an be exported for any region simply by entering the boundary coordinates at 
-   http://www.openstreetmap.org/export#map=17/41.72342/-111.85199. 
+   can be exported for any region simply by entering the boundary coordinates at 
+   http://www.openstreetmap.org/export. 
    Prior to doing this, I added sidewalk data by editing the OpenStreetMaps public map.
    
    The XML file is parsed into a graph, using the following steps:
@@ -23,17 +23,17 @@ Search Engine:
       until the halfway point is reached. After that point, it will choose nodes that move closer 
       to the beginning, thus creating a loop that results in the desired distance.
    
-      Modifications from A Star:
+      Modifications of A Star:
       The input is a start point and distance rather than a start point and end point.
-      The cost of an edge  is the existance or lack of a sidewalk, rather than a distance.
+      The cost of an edge is the existance or lack of a sidewalk, rather than a distance.
       The search is finished when the distance is reached or when all edges have been explored.
    
    
 Data Rendering:
-   I use Unfolding Maps to render the path returned by the search engine. It iterates through the
-   vector of coordinates and draws a straight line from each location to the next on an OpenStreetMaps
-   map. The coodinates of the start node are used as the center of the map view. The user can manually 
-   zoom and move through the map.
+   My data-rendering algorithm uses the Unfolding Maps library. To display the path returned by 
+   the search engine, the algorithm iterates through the vector of coordinates and draws a straight 
+   line from each location to the next on an OpenStreetMaps map. The coordinates of the start node 
+   are used as the center of the map view. The user can manually zoom and move through the map.
    
    
    
