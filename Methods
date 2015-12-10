@@ -1,9 +1,9 @@
 
 Map Data:
-   I acquired map data by exporting an XML file for Logan, Utah from OpenStreetMaps. This data 
+   I acquired map data by exporting an XML file for Logan, Utah from OpenStreetMap. This data 
    can be exported for any region simply by entering the boundary coordinates at 
    http://www.openstreetmap.org/export. 
-   Prior to doing this, I added sidewalk data by editing the OpenStreetMaps public map.
+   Prior to doing this, I added sidewalk data by editing the OpenStreetMap public map.
    
    The XML file is parsed into a graph, using the following steps:
    1. Eliminate all edges that are not roads (rivers, hiking trails, etc.).
@@ -32,7 +32,7 @@ Search Engine:
 Data Rendering:
    My data-rendering algorithm uses the Unfolding Maps library. To display the path returned by 
    the search engine, the algorithm iterates through the vector of coordinates and draws a straight 
-   line from each location to the next on an OpenStreetMaps map. The coordinates of the start node 
+   line from each location to the next on an OpenStreetMap map. The coordinates of the start node 
    are used as the center of the map view. The user can manually zoom and move through the map.
    
    
