@@ -34,7 +34,7 @@ public class HelloUnfoldingWorld extends PApplet {
 		PApplet.main(new String[] { HelloUnfoldingWorld.class.getName() });
 		System.out.println("here");
 	}
-	//AI_Project.Map m;
+
 	UnfoldingMap map;
 	MapSearch mapSearch;
 	
@@ -43,17 +43,18 @@ public class HelloUnfoldingWorld extends PApplet {
 	public void setup() {
 		try {
 			
-			coordinates = MapSearch.go();
+		     coordinates = MapSearch.go();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
+		//get the coordinates returned from the search engine and draw a path on the map
 		double centerLatitude = coordinates.get(0);
 		double centerLongitude = coordinates.get(1);
 		
@@ -73,7 +74,7 @@ public class HelloUnfoldingWorld extends PApplet {
 			connectionMarker = new SimpleLinesMarker(startLocation, endLocation);
 			connectionMarker.setStrokeColor(color(255, 0, 0));
 			connectionMarker.setStrokeWeight(4);
-			//marker = new SimplePointMarker(endLocation);
+			//marker = new SimplePointMarker(endLocation); //uncomment these to draw markers on each point
 			//map.addMarker(marker);
 						
 			map.addMarkers(connectionMarker);
@@ -87,10 +88,7 @@ public class HelloUnfoldingWorld extends PApplet {
 		background(0);
 		map.draw();
 	}
-
 }
-
-
 
 class MapSearch {
 	
@@ -98,10 +96,8 @@ class MapSearch {
 	static Node solution;
 	static Node startNode;
 	static Vector<Double> coordinates=new Vector<Double>();
-   // static Vector<Float> longitudes=new Vector<Float>();
-	
-   //static HelloUnfoldingWorld mapRenderer;
     
+	//print the path created
     public static void printPath(Node target)
     {
         List<Node> path = new ArrayList<Node>();
@@ -112,16 +108,14 @@ class MapSearch {
 	    Collections.reverse(path);
 	    
 	    for(int i = 0; i < path.size(); i++)
-	    {	//System.out.print(path.get(i) + " ");
+	    {	
 	    	coordinates.add(path.get(i).latitude);
 	    	coordinates.add(path.get(i).longitude);
 	    	System.out.print(path.get(i).id + "(" + path.get(i).adjacencies.size() +")"+  " Distance: " + path.get(i).distance + " Score: " + path.get(i).f_score + " DistanceBack: " + path.get(i).distanceBack + " " );
-	    	//for(int j = 0; j < path.get(i).adjacencies.size(); j++)
-		          // System.out.println("edges: " + path.get(i).adjacencies.get(j).id);
 	    }
 	    System.out.println("");
     }
-    
+    //search engine
     public static void AstarSearch(Node source, float targetDistance, SAXHandler handler)
     {
 	    Set<Node> visited = new HashSet<Node>();
@@ -168,11 +162,7 @@ class MapSearch {
 	            child.g_score = temp_g_score;
 	                 
 	            queue.add(child);
-	            //System.out.println("value: " + child.value + " f_score: " + child.f_score);
-	           
-	            //printPath(child);
-	            
-	            //if(child.distance >= targetDistance + .2)
+
 	            if(child.distance > targetDistance/2 && child.distanceBack < .17)
 	            	done = true;
 	            
@@ -188,7 +178,6 @@ class MapSearch {
 	    System.out.println(" ");
 }       
 
-  //public static void main(String[] args) throws Exception {
     public static Vector<Double> go() throws ParserConfigurationException, SAXException, IOException {
     SAXParserFactory parserFactor = SAXParserFactory.newInstance();
     SAXParser parser = parserFactor.newSAXParser();
@@ -218,9 +207,7 @@ class MapSearch {
         
         String key = entry.getKey();
     	Node node = entry.getValue();
-    	    	
-        //if(Math.abs(node.latitude - startLat) < .0005 && Math.abs(node.longitude - startLon) < .0005)
-    	
+    	    	    	
     	double distanceToNode = Math.sqrt(Math.pow((node.latitude-startLat), 2) + Math.pow((node.longitude-startLon), 2));
     	if(distanceToNode < minDistanceToNode)
         {
@@ -230,26 +217,18 @@ class MapSearch {
         	 continue;
         }    
     }
-    //startNode = handler.nodeMap.get("428959019");
     if(!foundNode)
     	startNode = handler.nodeMap.get("3756777137");
     AstarSearch(startNode, targetDistance, handler); 
     
     return coordinates;
-    //Printing the list
-   // for ( Edge edge : handler.edgeList){
-    //  System.out.println(edge);
-    //} 
   }
 }
-/**
- * The Handler for SAX Events.
- */
+//handler to parse the xml file (generated from exporting a map from OpenStreetMap) into a graph 
 class SAXHandler extends DefaultHandler {
 
  HashMap<String, Node> nodeMap = new HashMap<String, Node>();
-  //List<Node> nodeList = new ArrayList<>();
-    
+     
   static List<Edge> edgeList = new ArrayList<>();
   Edge edge = null;
   Node node = null;
@@ -259,12 +238,10 @@ class SAXHandler extends DefaultHandler {
   
   String content = null;
   @Override
-  //Triggered when the start of tag is found.
   public void startElement(String uri, String localName, 
                            String qName, Attributes attributes) 
                            throws SAXException {
-    switch(qName){
-      //Create a new Node object when the start tag is found  
+    switch(qName){ 
     	case "node":
     	{
         node = new Node();
@@ -275,8 +252,6 @@ class SAXHandler extends DefaultHandler {
         node.longitude = Double.parseDouble(attributes.getValue("lon"));
        
         nodeMap.put(node.id, node);
-
-        //System.out.println(nodeMap.get(node.id).id);
 
         isNode = true;
         break;
@@ -326,7 +301,7 @@ class SAXHandler extends DefaultHandler {
           throws SAXException {
     content = String.copyValueOf(ch, start, length).trim();
   }
-  
+  //gets the distance of the edge based on location of its adjacent nodes
   public double getEdgeDistance(Edge e) {
 		
 		double lon1 = nodeMap.get(e.refsList.get(0)).longitude;
@@ -351,17 +326,12 @@ class SAXHandler extends DefaultHandler {
 	  }
 	  edgeList.remove(edgeIndex);
   }
-  
+  //clean up the map
   public void parse()
   {
 	  int listSize = edgeList.size();
 	  
 	  //take out all the nodes connected to only one edge
-	  boolean changes = true;
-	  
-	 // while(changes)
-	  //{
-		  changes = false;
 		  Vector<String> nodesToRemove=new Vector<String>();
 		  
 		  for (HashMap.Entry<String, Node> entry : nodeMap.entrySet()) 
@@ -370,15 +340,14 @@ class SAXHandler extends DefaultHandler {
 			String key = entry.getKey();
 			Node node = entry.getValue();
 			
-			if(node.adjacencies.size() < 2) //if the node is only on one edge, remove it.
+			//if the node is only on one edge, remove it.
+			if(node.adjacencies.size() < 2) 
 			{	for(int adjIdx = 0 ; adjIdx < node.adjacencies.size(); adjIdx++)
 				{	
 					int edgeIdx = edgeList.indexOf(node.adjacencies.get(adjIdx)); //take the node from any edgeList refsList
 					edgeList.get(edgeIdx).refsList.remove(key);
 				}
-				nodesToRemove.addElement(key);
-				changes = true;
-				
+				nodesToRemove.addElement(key);				
 			}			
 		  }
 		  for(int removeIdx = 0; removeIdx < nodesToRemove.size(); removeIdx++)
@@ -399,15 +368,12 @@ class SAXHandler extends DefaultHandler {
 					  nodeMap.get(currEdge.refsList.get(j)).adjacencies.remove(currEdge); //remove edge from any nodes' adjacency list
 				  
 				  edgesToRemove.addElement(currEdge);
-				 // edgeList.remove(i); //remove edge from edgeList
-				  changes = true;
 			  }		
 		  }
 		  for(int removeIdx = 0; removeIdx < edgesToRemove.size(); removeIdx++)
 		  {
 			  edgeList.remove(edgesToRemove.get(removeIdx));
 		  }
-	  //}
 	  
 	  //get rid of footways, rivers, and such. Add scores for sidewalks.
 	  for(int i = 0; i < listSize; i++)
@@ -439,29 +405,7 @@ class SAXHandler extends DefaultHandler {
 		
 		if(!currEdge.keepEdge)
 			edgeList.get(i).id = "0";
-		
-		//remove all nodes with 1 or 0 edges
 
-	
-		//remove edges that are dead ends (1 or 0 nodes)
-		/*for(int adjIndex = 0; adjIndex < currEdge.refsList.size(); adjIndex++)
-		{
-		 String nodeId = currEdge.refsList.get(adjIndex);
-		
-     	   if(nodeMap.get(nodeId).adjacencies.size() < 2)
-     	   {
-     		   currEdge.refsList.remove(nodeId); 		  
-     		   nodeMap.remove(nodeId);
-     		   edgeList.get(i).id = "0";
-     	   }
-		}*/
-		
-		/*if (currEdge.refsList.size() < 2)//if a way has only one node, delete it out of the edgelist
-		{   edgeList.get(i).id = "0";
-		//if(currEdge.refsList.size() == 1)
-			//nodeMap.get(currEdge.refsList.get(0)).adjacencies.remove(currEdge);
-			continue;
-		}*/
 		if(currEdge.refsList.size() == 2)
 		{		
 			edgeList.get(i).distance = getEdgeDistance(currEdge);
@@ -472,63 +416,47 @@ class SAXHandler extends DefaultHandler {
         else
         {   
         	int j = 0;
-        	while( currEdge.refsList.size() > 2) //if there are > 2 nodes for edge
+        	while( currEdge.refsList.size() > 2) //while there are > 2 nodes for edge
 			{				   
         		
         	   String rightNodeId = currEdge.refsList.get(1);
         	   
         	   String leftNodeId = currEdge.refsList.get(0);
         	   
-        	   /*if(nodeMap.get(rightNodeId).adjacencies.size() == 1) //if the node is only on that edge, remove it
-        	   {
-        		   edgeList.get(i).refsList.remove(rightNodeId);
-        		   nodeMap.remove(rightNodeId);
-        		   if(currEdge.refsList.size() == 2)
-        			   continue;
-        	   }*/
-        	        	   
-        	   //else if(nodeMap.get(rightNodeId).adjacencies.size() > 1) // if the 2nd node has more than 1 edge
-        	  // {
-        		   //split the edge into 2:	
-        	   
-					Edge newEdge = new Edge();
-					newEdge.refsList.add(leftNodeId);
-					newEdge.refsList.add(rightNodeId);
+ 
+    		   //break off the first section and make it its own edge:	
+				Edge newEdge = new Edge();
+				newEdge.refsList.add(leftNodeId);
+				newEdge.refsList.add(rightNodeId);
 
-					String newIndex = Integer.toString(j);
-					String newId = currEdge.id.concat(newIndex);
-					newEdge.id = newId;
-					newEdge.keys = currEdge.keys;
-					newEdge.values = currEdge.values;
-					newEdge.distance = getEdgeDistance(newEdge);
-					edgeList.add(newEdge);
-					
-					nodeMap.get(leftNodeId).adjacencies.add(newEdge);
-					nodeMap.get(rightNodeId).adjacencies.add(newEdge);
-					
-					edgeList.get(i).refsList.remove(leftNodeId); //delete left node id from refs list of original edge (remove edgeList[i].refsList[0])
-					
-					int adjIndex = nodeMap.get(leftNodeId).adjacencies.indexOf(currEdge);
-					nodeMap.get(leftNodeId).adjacencies.remove(adjIndex); //delete original edge from the node's adjacency list
-				 // }
-            	   
-        	   		if(currEdge.refsList.size() == 2)
-        	   			edgeList.get(i).distance = getEdgeDistance(currEdge);
-        	   		j++;
-				}
-               
-            }	//edgeList.set(i, currEdge);
-		}
-		//for(int i = 0; i < edgeList.size(); i++){
-		//	if (edgeList.get(i).id.equals( "0"));	
-				//removeEdge(edgeList.get(i), i);
-		//}
-	  //int newListSize = edgeList.size();
+				String newIndex = Integer.toString(j);
+				String newId = currEdge.id.concat(newIndex);
+				newEdge.id = newId;
+				newEdge.keys = currEdge.keys;
+				newEdge.values = currEdge.values;
+				newEdge.distance = getEdgeDistance(newEdge);
+				edgeList.add(newEdge);
+				
+				nodeMap.get(leftNodeId).adjacencies.add(newEdge);
+				nodeMap.get(rightNodeId).adjacencies.add(newEdge);
+				
+				edgeList.get(i).refsList.remove(leftNodeId); //delete left node id from refs list of original edge (remove edgeList[i].refsList[0])
+				
+				int adjIndex = nodeMap.get(leftNodeId).adjacencies.indexOf(currEdge);
+				nodeMap.get(leftNodeId).adjacencies.remove(adjIndex); //delete original edge from the node's adjacency list
+        	   
+    	   		if(currEdge.refsList.size() == 2)
+    	   			edgeList.get(i).distance = getEdgeDistance(currEdge);
+    	   		j++;
+			}           
+        }	
+	}
+	  //remove all edges whose id has been flagged with a 0 or two-digit string
 	  for(int i = 0; i < edgeList.size(); i++)
 	  {
 	    Edge currEdge = edgeList.get(i);
 		 
-	      if(currEdge.id.compareTo( "1000") < 0) //if the id has been set to 0 or 00.
+	      if(currEdge.id.compareTo( "1000") < 0) //if the id has been set to 0 or 2-digit string.
 		  {
 			  if(currEdge.refsList.size() > 0) //if the edge has nodes, remove all edges from nodes
 			  {  
@@ -539,22 +467,8 @@ class SAXHandler extends DefaultHandler {
 			  }
 		  edgeList.remove(i); //remove edge from list
 		  i--; 
-		  }
-	  
+		  } 
 	   }
-	  for(int i = 0; i < nodeMap.get("82911829").adjacencies.size(); i++)
-		  System.out.println(nodeMap.get("82911829").adjacencies.get(i).id);
-	  
-	  for(int i = 0; i < edgeList.size(); i++)
-	  {
-		  if(edgeList.get(i).id.equals("1829519713") )
-			  System.out.println("danger score" + edgeList.get(i).d_score);
-	  }
-	 /* for(int i = 0; i < edgeList.size(); i++)
-	  {
-		 if(edgeList.get(i).id.equals("100842607"))
-		  System.out.println(i + "*******" +edgeList.get(i).refsList.get(0) + " " + edgeList.get(i).refsList.get(1)); 	 
-	  }*/
 	}
 }
 
@@ -562,11 +476,9 @@ class Node implements Comparable<Node> {
 
   String id;
   public Vector<Edge> adjacencies=new Vector<Edge>();
-  
-  //public final String value;
-  public double g_score = Integer.MAX_VALUE; //total distance from start node to this one
+  public double g_score = Integer.MAX_VALUE;
   public double error = 0;
-  public double f_score = 0; // g+h
+  public double f_score = 0;
   public Node parent;
   public double distance;
   public double latitude;
@@ -585,20 +497,15 @@ class Node implements Comparable<Node> {
   	double endLat = this.latitude;
   	double endLon = this.longitude;
   	
-  	//double straightLineDistance = Math.sqrt(Math.pow((startLat-endLat), 2) + Math.pow((startLon-endLon), 2));
-  	//System.out.println(value + ": " + "SLD: " + straightLineDistance );
   	double theta = startLon - endLon;
 	double straightLineDistance = Math.sin(Math.toRadians(startLat)) * Math.sin(Math.toRadians(endLat)) + Math.cos(Math.toRadians(startLat)) * Math.cos(Math.toRadians(endLat)) * Math.cos(Math.toRadians(theta));
 	straightLineDistance = Math.acos(straightLineDistance);
 	straightLineDistance = Math.toDegrees(straightLineDistance);
 	straightLineDistance = straightLineDistance * 60 * 1.1515;
-    //double distanceBack = Math.abs(startLat-endLat) + Math.abs(startLon-endLon);
+
     this.distanceBack = straightLineDistance;
-  	//System.out.println(value + ": distance: "+ this.distance);
-  	
-  	//return Math.abs(targetDistance -(this.distance + straightLineDistance))*3000; 	
-    //return Math.abs(targetDistance -(currDistance + distanceBack)) * 3000;
-    return Math.abs(targetDistance -(distance + straightLineDistance))*3000;
+
+    return Math.abs(targetDistance -(distance + straightLineDistance)) * 3000;
   
   }
   
@@ -653,15 +560,12 @@ class Node implements Comparable<Node> {
 
 	 public Edge()
 	 {
-	        // = targetNode; //fix
-	         distance = 0;  
-	         d_score = 300;
-	         isRoad = false;
-	         isOtherWay = false;
-	         hasSidewalkKey = false;
-	         hasSidewalkTrueValue = false;
-	         keepEdge = false;
+         distance = 0;  
+         d_score = 300;
+         isRoad = false;
+         isOtherWay = false;
+         hasSidewalkKey = false;
+         hasSidewalkTrueValue = false;
+         keepEdge = false;
 	 }
  }
- 
- 
